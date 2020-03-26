@@ -119,6 +119,7 @@ app.put("/api/user/change", jsonParser, function (req, res) {
         if (err) return console.log(err);
         res.send(user);
     });
+
 });
 
 app.put("/api/user/changePassword", jsonParser, function (req, res) {
