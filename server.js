@@ -26,6 +26,7 @@ mongoose.connect("mongodb://localhost:27017/usersdb", {useNewUrlParser: true}, f
         console.log("Сервер ожидает подключения...");
     });
 });
+mongoose.set('useFindAndModify', false);
 
 app.post("/api/users", jsonParser, function (req, res) {
 
@@ -89,6 +90,7 @@ app.put("/api/users", jsonParser, function (req, res) {
 app.get("/api/users/:id", function (req, res) {
 
     const id = req.params.id;
+    let copyUser = {};
 
     User.findOne({_id: id}, function (err, user) {
 
@@ -96,7 +98,12 @@ app.get("/api/users/:id", function (req, res) {
             return err;
             console.log('aaaaaaaaaaaa');
         }
-        res.send(user);
+
+        copyUser.name = user.name;
+        copyUser.age = user.age;
+        copyUser.gender = user.gender;
+
+        res.send(copyUser);
     });
 
 });
@@ -117,10 +124,11 @@ app.put("/api/user/change", jsonParser, function (req, res) {
 app.put("/api/user/changePassword", jsonParser, function (req, res) {
 
 
-    if (req.body === {}) return res.sendStatus(404);
+    if (req.body === {}) {
+        return res.sendStatus(404);
+    }
     const id = req.body.id;
     let newUser = {};
-    let b = false;
 
     newUser.password = req.body.newPassword;
     newUser.oldPassword = req.body.oldPassword;
@@ -128,36 +136,34 @@ app.put("/api/user/changePassword", jsonParser, function (req, res) {
 
     User.findOne({_id: id}, function (err, user) {
 
-        if (err) return console.log(err);
+        if (err) {
+            return console.log(err);
+        }
 
-
-        if (bcrypt.hashSync(newUser.oldPassword, newUser.salt) === user.password) {
+        if (bcrypt.hashSync(newUser.oldPassword, user.userId) === user.password) {
             console.log("совпадение? не думаю");
             res.status(200).send('success');
-            b = true;
+            user.password = bcrypt.hashSync(newUser.password, user.userId);
+            user.save(function(err){
+
+                if(err) return console.log(err);
+                console.log("Сохранен объект", user);
+            });
         } else {
             console.log("совпадение это не падение сов");
             res.status(401).send('Wrong password');
-            b = false;
         }
-
     });
 
 
-    if (b) {//комп выполняет эту функцию быстрее т.к. b = false необходимо ввести асинхронные функции
-        let text = bcrypt.hashSync(newUser.password, newUser.salt);
-        console.log(text);
-        console.log("alaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarm");
-        User.findByIdAndUpdate(id, {password : text}, function (err, user) {
-            if (err) return console.log(err);
-            console.log("I'm here");
-            // user.password = bcrypt.hashSync(newUser.password, newUser.salt);
-            res.status(200).send('success');
-            console.log("Обновленный объект", user);
-        });
-    }else{
-        console.log("nam pizda")
-    }
+});
 
+app.delete("/api/user/delete", jsonParser ,function(req, res){
 
+    const id = req.body.id;
+    User. findOneAndDelete()({login: id}, function(err, user){
+
+        if(err) return console.log(err);
+        res.status(200).send('success');
+    });
 });
