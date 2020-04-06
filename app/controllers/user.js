@@ -1,7 +1,8 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
-const userScheme = require("../models/user.js");
-const User = mongoose.model("User", userScheme);
+// const userScheme = require("../models/user.js");
+// const User = mongoose.model("User", userScheme);
+const User = require('../models/user.js');
 
 const addUser = function (req, res){
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -74,9 +75,12 @@ const loginUser = function (req, res){
     });
 };
 const changeUser = function(req, res){
-    if (!req.body) return res.sendStatus(404);
+    if (!req.body){
+        return res.sendStatus(404);
+    }
 
     const id = req.body._id;
+
     const newUser = req.body;
 
     User.findOneAndUpdate({_id: id}, newUser, {new: true}, function (err, user) {

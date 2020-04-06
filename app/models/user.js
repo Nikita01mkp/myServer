@@ -10,3 +10,7 @@ const userScheme = new Schema({
     gender: String,
     userId: String
 });
+
+const User = mongoose.model('User', userScheme);
+
+module.exports = User;

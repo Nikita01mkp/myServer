@@ -77,6 +77,7 @@ app.put("/api/users", jsonParser, function (req, res) {
 
             if (bcrypt.hashSync(getPassword, user.userId) === user.password) {
                 console.log("совпадение? не думаю");
+                console.log(user._id);
                 res.status(200).send('success')
             } else {
                 console.log("совпадение это не падение сов");
