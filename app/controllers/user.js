@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 // const User = mongoose.model("User", userScheme);
 const User = require('../models/user.js');
 
-const addUser = function (req, res){
+const addUser = function (req, res) {
     if (!req.body || Object.keys(req.body).length === 0) {
         console.log('WARNN ', req.body);
 
@@ -32,10 +32,10 @@ const addUser = function (req, res){
             console.log('ERRRRR ', err);
             return console.log(err);
         }
-        res.send(user);
+        res.status(200).send("Success");
     });
 };
-const getUser = function(req, res){
+const getUser = function (req, res) {
     const id = req.params.id;
     let copyUser = {};
 
@@ -52,7 +52,7 @@ const getUser = function(req, res){
         res.send(copyUser);
     });
 };
-const loginUser = function (req, res){
+const loginUser = function (req, res) {
     if (!req.body) return res.sendStatus(404);
     const getLogin = req.body.userLogin;
     const getPassword = req.body.userPassword;
@@ -66,6 +66,7 @@ const loginUser = function (req, res){
 
             if (bcrypt.hashSync(getPassword, user.userId) === user.password) {
                 console.log("совпадение? не думаю");
+                console.log(user._id);
                 res.status(200).send('success')
             } else {
                 console.log("совпадение это не падение сов");
@@ -74,8 +75,8 @@ const loginUser = function (req, res){
         }
     });
 };
-const changeUser = function(req, res){
-    if (!req.body){
+const changeUser = function (req, res) {
+    if (!req.body) {
         return res.sendStatus(404);
     }
 
@@ -88,7 +89,7 @@ const changeUser = function(req, res){
         res.send(user);
     });
 };
-const changeUserPassword = function (req, res){
+const changeUserPassword = function (req, res) {
     if (req.body === {}) {
         return res.sendStatus(404);
     }
@@ -109,9 +110,9 @@ const changeUserPassword = function (req, res){
             console.log("совпадение? не думаю");
             res.status(200).send('success');
             user.password = bcrypt.hashSync(newUser.password, user.userId);
-            user.save(function(err){
+            user.save(function (err) {
 
-                if(err) return console.log(err);
+                if (err) return console.log(err);
                 console.log("Сохранен объект", user);
             });
         } else {
@@ -120,12 +121,14 @@ const changeUserPassword = function (req, res){
         }
     });
 };
-const deleteUser = function(req, res){
-    const id = req.body.id;
-    User. findOneAndDelete()({login: id}, function(err, user){
+const deleteUser = function (req, res) {
+    const id = req.params.id;
+    console.log('tuk tuk')
+    User.findOneAndDelete({_id: id}, function (err, user) {
 
-        if(err) return console.log(err);
+        if (err) return console.log(err);
         res.status(200).send('success');
+
     });
 };
 

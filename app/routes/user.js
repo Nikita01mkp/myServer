@@ -8,6 +8,6 @@ userRouter.put("/", jsonParser, userController.loginUser);
 userRouter.get("/:id", userController.getUser);
 userRouter.put("/change", jsonParser, userController.changeUser);
 userRouter.put("/changePassword", jsonParser, userController.changeUserPassword);
-userRouter.delete("/", jsonParser, userController.deleteUser);
+userRouter.delete("/:id", userController.deleteUser);
 
 module.exports = userRouter;
