@@ -1,7 +1,4 @@
-// const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
-// const userScheme = require("../models/user.js");
-// const User = mongoose.model("User", userScheme);
 const User = require('../models/user.js');
 
 const addUser = function (req, res) {
@@ -29,12 +26,12 @@ const addUser = function (req, res) {
 
     user.save(function (err) {
         if (err) {
-            console.log('ERRRRR ', err);
             return console.log(err);
         }
         res.status(200).send("Success");
     });
 };
+
 const getUser = function (req, res) {
     const id = req.params.id;
     let copyUser = {};
@@ -52,8 +49,11 @@ const getUser = function (req, res) {
         res.send(copyUser);
     });
 };
+
 const loginUser = function (req, res) {
-    if (!req.body) return res.sendStatus(404);
+    if (!req.body){
+        return res.sendStatus(404);
+    }
     const getLogin = req.body.userLogin;
     const getPassword = req.body.userPassword;
     User.findOne({login: getLogin}, function (err, user) {
@@ -65,11 +65,14 @@ const loginUser = function (req, res) {
         } else {
 
             if (bcrypt.hashSync(getPassword, user.userId) === user.password) {
-                console.log("совпадение? не думаю");
                 console.log(user._id);
+                user.token = token;
+                user.save(function (err) {
+                    if (err) return console.log(err);
+                    console.log("Сохранен объект", user);
+                });
                 res.status(200).send('success')
             } else {
-                console.log("совпадение это не падение сов");
                 res.status(401).send('Wrong password')
             }
         }
@@ -85,7 +88,9 @@ const changeUser = function (req, res) {
     const newUser = req.body;
 
     User.findOneAndUpdate({_id: id}, newUser, {new: true}, function (err, user) {
-        if (err) return console.log(err);
+        if (err){
+            return console.log(err);
+        }
         res.send(user);
     });
 };
@@ -123,10 +128,11 @@ const changeUserPassword = function (req, res) {
 };
 const deleteUser = function (req, res) {
     const id = req.params.id;
-    console.log('tuk tuk')
     User.findOneAndDelete({_id: id}, function (err, user) {
 
-        if (err) return console.log(err);
+        if (err){
+            return console.log(err);
+        }
         res.status(200).send('success');
 
     });
