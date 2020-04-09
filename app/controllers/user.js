@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user.js');
+const userAuth = require("../modules/auth.js");
 
 const addUser = function (req, res) {
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -33,7 +34,11 @@ const addUser = function (req, res) {
 };
 
 const getUser = function (req, res) {
-    const id = req.params.id;
+    if(Object.keys(req.body).length === 0){
+        console.log(req.body);
+        return res.status(403).send("Object is empty")
+    }
+    const id = req.body.id;
     let copyUser = {};
 
     User.findOne({_id: id}, function (err, user) {
@@ -54,6 +59,11 @@ const loginUser = function (req, res) {
     if (!req.body){
         return res.sendStatus(404);
     }
+
+    // const token = req.token;
+
+    // console.log(token);
+
     const getLogin = req.body.userLogin;
     const getPassword = req.body.userPassword;
     User.findOne({login: getLogin}, function (err, user) {
@@ -66,12 +76,8 @@ const loginUser = function (req, res) {
 
             if (bcrypt.hashSync(getPassword, user.userId) === user.password) {
                 console.log(user._id);
-                user.token = token;
-                user.save(function (err) {
-                    if (err) return console.log(err);
-                    console.log("Сохранен объект", user);
-                });
-                res.status(200).send('success')
+                const tokens = userAuth.createToken(user._id);
+                res.status(200).send(tokens)
             } else {
                 res.status(401).send('Wrong password')
             }
@@ -79,11 +85,11 @@ const loginUser = function (req, res) {
     });
 };
 const changeUser = function (req, res) {
-    if (!req.body) {
-        return res.sendStatus(404);
+    if(Object.keys(req.body).length === 0){
+        return res.status(403).send("Object is empty")
     }
 
-    const id = req.body._id;
+    const id = req.body.id;
 
     const newUser = req.body;
 
@@ -127,7 +133,7 @@ const changeUserPassword = function (req, res) {
     });
 };
 const deleteUser = function (req, res) {
-    const id = req.params.id;
+    const id = req.body.id;
     User.findOneAndDelete({_id: id}, function (err, user) {
 
         if (err){
