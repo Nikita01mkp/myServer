@@ -60,10 +60,6 @@ const loginUser = function (req, res) {
         return res.sendStatus(404);
     }
 
-    // const token = req.token;
-
-    // console.log(token);
-
     const getLogin = req.body.userLogin;
     const getPassword = req.body.userPassword;
     User.findOne({login: getLogin}, function (err, user) {
@@ -118,17 +114,14 @@ const changeUserPassword = function (req, res) {
         }
 
         if (bcrypt.hashSync(newUser.oldPassword, user.userId) === user.password) {
-            console.log("совпадение? не думаю");
             res.status(200).send('success');
             user.password = bcrypt.hashSync(newUser.password, user.userId);
             user.save(function (err) {
 
                 if (err) return console.log(err);
-                console.log("Сохранен объект", user);
             });
         } else {
-            console.log("совпадение это не падение сов");
-            res.status(401).send('Wrong password');
+            res.status(403).send('Wrong password');
         }
     });
 };

@@ -5,7 +5,7 @@ const userAuth = require("../modules/auth.js");
 const userRouter = express.Router();
 
 userRouter.post("/", jsonParser, userController.addUser);
-userRouter.put("/", jsonParser, userController.loginUser);
+userRouter.put("/", jsonParser, userAuth.deleteToken, userController.loginUser);
 userRouter.get("/:token", jsonParser, userAuth.checkToken, userController.getUser);
 userRouter.put("/change/:token", jsonParser, userAuth.checkToken,  userController.changeUser);
 userRouter.put("/changePassword/:token", jsonParser, userAuth.checkToken,  userController.changeUserPassword);

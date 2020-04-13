@@ -1,8 +1,8 @@
-// const jsonParser = express.json();
+
 const jwt = require('jsonwebtoken');
 const Auth = require('../models/auth.js');
 
-// createToken
+
 
 const createToken = function (id) {
 
@@ -28,16 +28,9 @@ const createToken = function (id) {
 
     return obj;
 
-    //const decoded = jwt.verify(token, secret);
 };
 
-// const userAuth = function (userToken) {
-//
-//     const secret = 'SuperSecretKeyForMyFirstServer123';
-//     const token = jwt.sign({userId: id}, secret);
-//     return token === userToken;
-//
-// };
+
 
 function checkToken(req, res, next) {
 
@@ -45,9 +38,6 @@ function checkToken(req, res, next) {
     const id = jwt.decode(x);
 
     if (id.exp < (Math.floor(Date.now() / 1000))) {
-        console.log("Token is bad");
-        console.log(id.exp);
-        console.log((Math.floor(Date.now() / 1000)));
         return res.status(401).send("Token is bad")
     }
 
@@ -63,7 +53,7 @@ function checkToken(req, res, next) {
             req.body.id = id.userId;
             next();
         } else {
-            res.status(403).send("unauthorized"); //here do whatever you want to do
+            res.status(403).send("unauthorized");
         }
     });
 
@@ -72,10 +62,6 @@ function checkToken(req, res, next) {
 
 function refreshToken(req, res) {
 
-    // console.log("tuk tuk");
-    // res.status(401).send("All is good");
-
-    //remove()
     Auth.findOne({token: req.body.token}, function (err, auth) {
 
         if(err){
@@ -87,11 +73,29 @@ function refreshToken(req, res) {
 
             const newTokens = createToken(auth.user_id);
             auth.remove();
-            console.log(newTokens);
             return res.send(newTokens);
         }else{
-            return res.status(403);
+            return res.status(403).send("RefreshToken is wrong");
         }
+
+    })
+
+}
+
+function deleteToken(req, res, next){
+
+    Auth.findOne({token: req.body.token}, function (err, auth) {
+      if(err){
+          next();
+      }
+
+      try {
+          auth.remove();
+          next();
+      } catch (e) {
+          // console.log(e);
+          next();
+      }
 
     })
 
@@ -101,4 +105,5 @@ module.exports = {
     createToken,
     checkToken,
     refreshToken,
+    deleteToken,
 }
