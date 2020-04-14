@@ -15,6 +15,8 @@ const addUser = function (req, res) {
     const userEmail = req.body.userEmail;
     const userName = req.body.userName;
     const userAge = req.body.userAge;
+    const home = req.body.userHomes;
+    console.log(req.body);
 
     const user = new User({
         login: userLogin,
@@ -22,7 +24,8 @@ const addUser = function (req, res) {
         email: userEmail,
         name: userName,
         age: userAge,
-        userId: saltRounds
+        userId: saltRounds,
+        homes: home,
     });
 
     user.save(function (err) {
@@ -34,6 +37,8 @@ const addUser = function (req, res) {
 };
 
 const getUser = function (req, res) {
+    console.log("Tuk tuk");
+
     if(Object.keys(req.body).length === 0){
         console.log(req.body);
         return res.status(403).send("Object is empty")

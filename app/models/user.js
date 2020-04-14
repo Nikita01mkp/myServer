@@ -10,6 +10,7 @@ const userScheme = new Schema({
     gender: String,
     userId: String,
     token: String,
+    homes: mongoose.ObjectId
 });
 
 const User = mongoose.model('User', userScheme);

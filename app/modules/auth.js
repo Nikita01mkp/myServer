@@ -34,6 +34,11 @@ const createToken = function (id) {
 
 function checkToken(req, res, next) {
 
+    console.log(Object.keys(req.params.token).length);
+    if(Object.keys(req.params.token).length === 4){
+        return res.status(403).send('Token is empty');
+    }
+
     const x = req.params.token;
     const id = jwt.decode(x);
 
@@ -47,9 +52,13 @@ function checkToken(req, res, next) {
             return res.status(403).send("bad req");
         }
 
-        const token = auth.token;
+        if(auth === {}){
+            return res.status(403).send("unauthorized");
+        }
 
+        const token = auth.token;
         if (x === token) {
+            console.log("All right");
             req.body.id = id.userId;
             next();
         } else {
@@ -83,6 +92,7 @@ function refreshToken(req, res) {
 }
 
 function deleteToken(req, res, next){
+    console.log("tuk tuk delete token");
 
     Auth.findOne({token: req.body.token}, function (err, auth) {
       if(err){
