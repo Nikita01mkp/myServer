@@ -11,6 +11,6 @@ userRouter.put("/change/:token", jsonParser, userAuth.checkToken,  userControlle
 userRouter.put("/changePassword/:token", jsonParser, userAuth.checkToken,  userController.changeUserPassword);
 userRouter.delete("/:token", jsonParser, userAuth.checkToken, userController.deleteUser);
 userRouter.post("/token/refresh", jsonParser, userAuth.refreshToken);
-userRouter.post("/token/delete", jsonParser, userAuth.deleteToken);
+userRouter.post("/token/delete", jsonParser, userAuth.userLogout);
 
 module.exports = userRouter;

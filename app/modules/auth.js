@@ -92,7 +92,7 @@ function refreshToken(req, res) {
 }
 
 function deleteToken(req, res, next){
-    console.log("tuk tuk delete token");
+
 
     Auth.findOne({token: req.body.token}, function (err, auth) {
       if(err){
@@ -111,9 +111,30 @@ function deleteToken(req, res, next){
 
 }
 
+function userLogout(req, res){
+
+    console.log("tuk tuk delete token");
+
+    Auth.findOne({token: req.body.token}, function (err, auth) {
+
+        if(err){
+            return res.status(400)
+        }
+        if (auth.refreshToken === req.body.refreshToken){
+            auth.remove();
+            return res.status(200).send("success");
+        }
+
+    })
+
+
+
+}
+
 module.exports = {
     createToken,
     checkToken,
     refreshToken,
     deleteToken,
+    userLogout,
 }
