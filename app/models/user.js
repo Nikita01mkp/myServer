@@ -10,7 +10,10 @@ const userScheme = new Schema({
     gender: String,
     userId: String,
     token: String,
-    homes: mongoose.ObjectId
+    homes: [{
+        type: mongoose.Schema.ObjectId,
+        ref: 'Home'
+    }],
 });
 
 const User = mongoose.model('User', userScheme);

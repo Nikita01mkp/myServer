@@ -34,7 +34,6 @@ const createToken = function (id) {
 
 function checkToken(req, res, next) {
 
-    console.log(Object.keys(req.params.token).length);
     if(Object.keys(req.params.token).length === 4){
         return res.status(403).send('Token is empty');
     }
@@ -58,7 +57,6 @@ function checkToken(req, res, next) {
 
         const token = auth.token;
         if (x === token) {
-            console.log("All right");
             req.body.id = id.userId;
             next();
         } else {
@@ -103,7 +101,6 @@ function deleteToken(req, res, next){
           auth.remove();
           next();
       } catch (e) {
-          // console.log(e);
           next();
       }
 
@@ -113,7 +110,6 @@ function deleteToken(req, res, next){
 
 function userLogout(req, res){
 
-    console.log("tuk tuk delete token");
 
     Auth.findOne({token: req.body.token}, function (err, auth) {
 

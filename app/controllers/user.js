@@ -15,7 +15,6 @@ const addUser = function (req, res) {
     const userEmail = req.body.userEmail;
     const userName = req.body.userName;
     const userAge = req.body.userAge;
-    const home = req.body.userHomes;
     console.log(req.body);
 
     const user = new User({
@@ -25,7 +24,6 @@ const addUser = function (req, res) {
         name: userName,
         age: userAge,
         userId: saltRounds,
-        homes: home,
     });
 
     user.save(function (err) {
@@ -37,10 +35,8 @@ const addUser = function (req, res) {
 };
 
 const getUser = function (req, res) {
-    console.log("Tuk tuk");
 
     if(Object.keys(req.body).length === 0){
-        console.log(req.body);
         return res.status(403).send("Object is empty")
     }
     const id = req.body.id;
@@ -69,14 +65,14 @@ const loginUser = function (req, res) {
     const getPassword = req.body.userPassword;
     User.findOne({login: getLogin}, function (err, user) {
 
-        if (err) return console.log(err);
+        if (err){
+            return console.log(err);
+        }
         if (user === null) {
-            console.log('user not found');
             res.status(400).send('User is not exist');
         } else {
 
             if (bcrypt.hashSync(getPassword, user.userId) === user.password) {
-                console.log(user._id);
                 const tokens = userAuth.createToken(user._id);
                 res.status(200).send(tokens)
             } else {
@@ -123,7 +119,10 @@ const changeUserPassword = function (req, res) {
             user.password = bcrypt.hashSync(newUser.password, user.userId);
             user.save(function (err) {
 
-                if (err) return console.log(err);
+                if (err){
+                    return console.log(err);
+                }
+
             });
         } else {
             res.status(403).send('Wrong password');
