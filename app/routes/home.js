@@ -10,5 +10,7 @@ homeRouter.post("/addHome/:token", jsonParser, userAuth.checkToken, homeControll
 homeRouter.post("/addRoom/:token", jsonParser, userAuth.checkToken, homeController.addRoom);
 homeRouter.post("/updateHome/:token", jsonParser, userAuth.checkToken, homeController.updateHome);
 homeRouter.post("/updateRoom/:token", jsonParser, userAuth.checkToken, homeController.updateRoom);
+homeRouter.post("/deleteHome/:token", jsonParser, userAuth.checkToken, homeController.deleteHome);
+homeRouter.post("/deleteRoom/:token", jsonParser, userAuth.checkToken, homeController.deleteRoom);
 
 module.exports = homeRouter;

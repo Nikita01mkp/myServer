@@ -34,30 +34,41 @@ function getListofRooms(req, res) {
 
 function addHome(req, res) {
 
+    console.log("ADD HOME    " + "Home name is " + req.body.homeName);
+
     User.findOne({_id: req.body.id}, function (err, user) {
 
         if (err) {
+            console.log("ADD HOME ERR1");
             return res.status(405);
         }
 
-        const home = new Home({
+        const newHome = new Home({
             homeName: req.body.homeName,
         })
 
-        home.save(function (err, home) {
+        newHome.save(function (err, home) {
             if (err) {
+                console.log("ADD HOME ERR2");
                 return res.status(405)
             }
 
-            user.homes[user.homes.length] = home;
+            console.log("Home is: " + home);
+
+            user.homes.push(home._id);
+            // user.homes[user.homes.length] = '5e9ef4d4e6fcb541141cb3a7';
+            user.save(function (err, user1) {
+                if (err) {
+                    console.log("ADD HOME ERR3");
+                    return res.status(406)
+                }
+                console.log("User is: " + user1);
+                return res.status(200);
+            })
         })
 
-        user.save(function (err) {
-            if (err) {
-                return res.status(406)
-            }
-            return res.status(200);
-        })
+
+
 
     })
 
@@ -141,6 +152,40 @@ function updateRoom(req, res) {
 
 }
 
+function deleteHome(req, res) {
+
+    Home.findOne({_id: req.body.homeId}).populate.exec( function (err, home) {
+
+        if (err) {
+            return res.status(405);
+        }
+
+        for(let i = 0; i < home.rooms.length; i++){
+            home.rooms[i].remove();
+        }
+
+        home.remove();
+        return res.status(200);
+
+    })
+
+}
+
+function deleteRoom(req, res) {
+
+    Room.findOne({_id: req.body.roomId}, function (err, room) {
+
+        if (err) {
+            return res.status(405);
+        }
+
+        room.remove();
+        return res.status(200);
+
+    })
+
+}
+
 module.exports = {
 
     getListofHomes,
@@ -149,5 +194,7 @@ module.exports = {
     addRoom,
     updateHome,
     updateRoom,
+    deleteHome,
+    deleteRoom,
 
 }
