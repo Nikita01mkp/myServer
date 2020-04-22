@@ -63,11 +63,10 @@ function addHome(req, res) {
                     return res.status(406)
                 }
                 console.log("User is: " + user1);
-                return res.status(200);
+                console.log("отправляем статус");
+                return res.status(200).send("Success");
             })
         })
-
-
 
 
     })
@@ -83,7 +82,7 @@ function addRoom(req, res) {
         }
 
         const room = new Room({
-            homeName: req.body.roomName,
+            roomName: req.body.roomName,
         })
 
         room.save(function (err, room) {
@@ -92,21 +91,24 @@ function addRoom(req, res) {
                 return res.status(405)
             }
 
-            home.rooms[home.rooms.length] = room;
+            home.rooms.push(room);
+
+            home.save(function (err) {
+                if (err) {
+                    return res.status(406)
+                }
+                return res.status(200).send('Success');
+            })
         })
 
-        home.save(function (err) {
-            if (err) {
-                return res.status(406)
-            }
-            return res.status(200);
-        })
 
     })
 
 }
 
 function updateHome(req, res) {
+
+    console.log("updateHome");
 
     Home.findOne({_id: req.body.homeId}, function (err, home) {
 
@@ -120,7 +122,7 @@ function updateHome(req, res) {
             if (err) {
                 return res.status(405)
             }
-            return res.status(200)
+            return res.status(200).send("success");
 
         })
 
@@ -143,7 +145,7 @@ function updateRoom(req, res) {
             if (err) {
                 return res.status(405)
             }
-            return res.status(200)
+            return res.status(200).send("success")
 
         })
 
@@ -154,13 +156,13 @@ function updateRoom(req, res) {
 
 function deleteHome(req, res) {
 
-    Home.findOne({_id: req.body.homeId}).populate.exec( function (err, home) {
+    Home.findOne({_id: req.body.homeId}).populate.exec(function (err, home) {
 
         if (err) {
             return res.status(405);
         }
 
-        for(let i = 0; i < home.rooms.length; i++){
+        for (let i = 0; i < home.rooms.length; i++) {
             home.rooms[i].remove();
         }
 
