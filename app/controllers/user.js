@@ -4,8 +4,6 @@ const userAuth = require("../modules/auth.js");
 
 const addUser = function (req, res) {
     if (!req.body || Object.keys(req.body).length === 0) {
-        console.log('WARNN ', req.body);
-
         return res.send("no body");
     }
 
@@ -15,7 +13,6 @@ const addUser = function (req, res) {
     const userEmail = req.body.userEmail;
     const userName = req.body.userName;
     const userAge = req.body.userAge;
-    console.log(req.body);
 
     const user = new User({
         login: userLogin,
@@ -57,7 +54,7 @@ const getUser = function (req, res) {
 };
 
 const loginUser = function (req, res) {
-    if (!req.body){
+    if ((!req.body) && (Object.keys(req.body).length === 0)){
         return res.sendStatus(404);
     }
 
@@ -92,13 +89,13 @@ const changeUser = function (req, res) {
 
     User.findOneAndUpdate({_id: id}, newUser, {new: true}, function (err, user) {
         if (err){
-            return console.log(err);
+            return res.status(404).send(err);
         }
-        res.send(user);
+        return res.send(user);
     });
 };
 const changeUserPassword = function (req, res) {
-    if (req.body === {}) {
+    if ((req.body === {}) && (Object.keys(req.body).length === 0)) {
         return res.sendStatus(404);
     }
     const id = req.body.id;
@@ -111,7 +108,7 @@ const changeUserPassword = function (req, res) {
     User.findOne({_id: id}, function (err, user) {
 
         if (err) {
-            return console.log(err);
+            return res.status(404).send(err);
         }
 
         if (bcrypt.hashSync(newUser.oldPassword, user.userId) === user.password) {
@@ -120,12 +117,12 @@ const changeUserPassword = function (req, res) {
             user.save(function (err) {
 
                 if (err){
-                    return console.log(err);
+                    return res.status(404).send(err);
                 }
 
             });
         } else {
-            res.status(403).send('Wrong password');
+            return res.status(403).send('Wrong password');
         }
     });
 };
@@ -134,9 +131,9 @@ const deleteUser = function (req, res) {
     User.findOneAndDelete({_id: id}, function (err, user) {
 
         if (err){
-            return console.log(err);
+            return res.status(404).send(err);
         }
-        res.status(200).send('success');
+        return res.status(200).send('success');
 
     });
 };

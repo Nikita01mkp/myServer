@@ -5,7 +5,6 @@ const Room = require('../models/room.js');
 
 function getListofHomes(req, res) {
 
-    console.log("Tuk tuk from home");
     User.findOne({_id: req.body.id}).populate('homes').exec(function (err, user) {
 
         if (err) {
@@ -34,12 +33,14 @@ function getListofRooms(req, res) {
 
 function addHome(req, res) {
 
-    console.log("ADD HOME    " + "Home name is " + req.body.homeName);
+    if (req.body.homeName === undefined){
+        console.log("Name is empty");
+        return res.status(400).send("Home name is empty");
+    }
 
     User.findOne({_id: req.body.id}, function (err, user) {
 
         if (err) {
-            console.log("ADD HOME ERR1");
             return res.status(405);
         }
 
@@ -49,21 +50,14 @@ function addHome(req, res) {
 
         newHome.save(function (err, home) {
             if (err) {
-                console.log("ADD HOME ERR2");
                 return res.status(405)
             }
 
-            console.log("Home is: " + home);
-
             user.homes.push(home._id);
-            // user.homes[user.homes.length] = '5e9ef4d4e6fcb541141cb3a7';
             user.save(function (err, user1) {
                 if (err) {
-                    console.log("ADD HOME ERR3");
                     return res.status(406)
                 }
-                console.log("User is: " + user1);
-                console.log("отправляем статус");
                 return res.status(200).send("Success");
             })
         })
@@ -108,7 +102,6 @@ function addRoom(req, res) {
 
 function updateHome(req, res) {
 
-    console.log("updateHome");
 
     Home.findOne({_id: req.body.homeId}, function (err, home) {
 
@@ -156,18 +149,27 @@ function updateRoom(req, res) {
 
 function deleteHome(req, res) {
 
-    Home.findOne({_id: req.body.homeId}).populate.exec(function (err, home) {
+    Home.findOne({_id: req.body.homeId}).populate("homes").exec(function (err, home) {
 
         if (err) {
             return res.status(405);
         }
 
         for (let i = 0; i < home.rooms.length; i++) {
-            home.rooms[i].remove();
+
+            Room.findOne({_id: home.rooms[i]._id}, function (err, room) {
+
+                if (err) {
+                    return res.status(405);
+                }
+
+                room.remove();
+
+            })
         }
 
         home.remove();
-        return res.status(200);
+        return res.status(200).send("success");
 
     })
 
@@ -182,7 +184,7 @@ function deleteRoom(req, res) {
         }
 
         room.remove();
-        return res.status(200);
+        return res.status(200).send("success");
 
     })
 

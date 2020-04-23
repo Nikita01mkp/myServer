@@ -41,7 +41,7 @@ function checkToken(req, res, next) {
     const x = req.params.token;
     const id = jwt.decode(x);
 
-    if (id.exp < (Math.floor(Date.now() / 1000))) {
+    if (id.exp < (Math.floor(Date.now() / 30000))) {
         return res.status(401).send("Token is bad")
     }
 
