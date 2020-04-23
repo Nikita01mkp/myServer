@@ -7,7 +7,7 @@ const Auth = require('../models/auth.js');
 const createToken = function (id) {
 
     const secret = 'SuperSecretKeyForMyFirstServer123';
-    const token = jwt.sign({userId: id, exp: Math.floor(Date.now() / 1000) + (60 * 2)}, secret);
+    const token = jwt.sign({userId: id, exp: Math.floor(Date.now() / 1000) + (60 * 30)}, secret);
 
     const secretRef = 'SecretKeyForRefreshToken123987654';
     const refreshToken = jwt.sign({userId: id}, secretRef);
@@ -41,7 +41,7 @@ function checkToken(req, res, next) {
     const x = req.params.token;
     const id = jwt.decode(x);
 
-    if (id.exp < (Math.floor(Date.now() / 30000))) {
+    if (id.exp < (Math.floor(Date.now() / 1000))) {
         return res.status(401).send("Token is bad")
     }
 
