@@ -21,6 +21,7 @@ const addUser = function (req, res) {
         name: userName,
         age: userAge,
         userId: saltRounds,
+        userRole: 'User',
     });
 
     user.save(function (err) {

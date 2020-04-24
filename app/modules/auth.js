@@ -68,6 +68,9 @@ function checkToken(req, res, next) {
 }
 
 function refreshToken(req, res) {
+    if(req.body.refreshToken === undefined){
+        return res.sendStatus(403);
+    }
 
     Auth.findOne({token: req.body.token}, function (err, auth) {
 

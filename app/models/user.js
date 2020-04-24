@@ -14,6 +14,7 @@ const userScheme = new Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Home'
     }],
+    userRole: String,
 });
 
 const User = mongoose.model('User', userScheme);
