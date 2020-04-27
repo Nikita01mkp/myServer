@@ -72,6 +72,7 @@ const loginUser = function (req, res) {
 
             if (bcrypt.hashSync(getPassword, user.userId) === user.password) {
                 const tokens = userAuth.createToken(user._id);
+                tokens.userRole = user.userRole;
                 res.status(200).send(tokens)
             } else {
                 res.status(401).send('Wrong password')

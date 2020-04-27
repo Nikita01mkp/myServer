@@ -15,7 +15,10 @@ app.use("/api/homes", homeRouter);
 app.use("/api/control", adminRouter);
 
 mongoose.connect("mongodb://localhost:27017/usersdb", {useNewUrlParser: true}, function (err) {
-    if (err) return console.log(err);
+    if (err){
+        console.log("ERROR DANGERS THIS IS PROBLEM WITH MONGOOSE");
+        return console.log(err);
+    }
     app.listen(3000, function () {
         console.log("Сервер ожидает подключения...");
     });
