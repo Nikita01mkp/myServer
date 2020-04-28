@@ -1,6 +1,9 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user.js');
 const userAuth = require("../modules/auth.js");
+const Home = require("../models/home.js");
+const Auth = require("../models/auth.js");
+const Room = require("../models/room.js");
 
 const addUser = function (req, res) {
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -130,11 +133,44 @@ const changeUserPassword = function (req, res) {
 };
 const deleteUser = function (req, res) {
     const id = req.body.id;
-    User.findOneAndDelete({_id: id}, function (err, user) {
+
+    User.findOne({_id: id}).populate("users").exec(function (err, user) {
 
         if (err){
             return res.status(404).send(err);
         }
+
+        for(let i = 0; i < user.homes.length; i++){
+            Home.findOne({_id: user.homes[i]._id}).populate("homes").exec(function (err, home) {
+
+                if (err) {
+                    return res.status(405);
+                }
+
+                for (let i = 0; i < home.rooms.length; i++) {
+
+                    Room.findOne({_id: home.rooms[i]._id}, function (err, room) {
+
+                        if (err) {
+                            return res.status(405);
+                        }
+
+                        room.remove();
+
+                    })
+                }
+
+                home.remove();
+            })
+        }
+
+        Auth.findOneAndDelete({user_id: id}, function (err) {
+            if (err){
+                return res.status(404).send(err);
+            }
+        })
+
+        user.remove();
         return res.status(200).send('success');
 
     });
