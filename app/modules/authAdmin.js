@@ -2,11 +2,16 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user.js');
 
 function checkAccess(req, res, next) {
-    if((Object.keys(req.params.token).length === 4) || (req.params.token === undefined)){
+
+    console.log('');
+    console.log(req.query);
+    console.log('');
+
+    if((Object.keys(req.query.token).length === 4) || (req.query.token === undefined)){
         return res.status(405).send('Token is empty');
     }
 
-    const x = req.params.token;
+    const x = req.query.token;
     const obj = jwt.decode(x);
 
     if (obj.exp < (Math.floor(Date.now() / 1000))) {

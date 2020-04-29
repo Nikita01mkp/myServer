@@ -9,13 +9,17 @@ const addUser = function (req, res) {
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.send("no body");
     }
+    if (req.body.mail === undefined){
+        return res.status(406).send("Format email is wrong")
+    }
 
-    const userLogin = req.body.userLogin;
+    const userLogin = req.body.login;
     let saltRounds = bcrypt.genSaltSync(10);
-    const userPassword = bcrypt.hashSync(req.body.userPassword, saltRounds);
-    const userEmail = req.body.userEmail;
-    const userName = req.body.userName;
-    const userAge = req.body.userAge;
+    const userPassword = bcrypt.hashSync(req.body.password, saltRounds);
+    const userEmail = req.body.mail;
+    const userName = req.body.name;
+    const userAge = req.body.age;
+
 
     const user = new User({
         login: userLogin,

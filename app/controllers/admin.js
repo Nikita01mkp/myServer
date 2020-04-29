@@ -25,7 +25,7 @@ function getUserList(req,res) {
 
 function deleteUser(req, res){
 
-    const id = req.body._id;
+    const id = req.query._id;
 
     User.findOne({_id: id}).populate("users").exec(function (err, user) {
 

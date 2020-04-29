@@ -5,6 +5,10 @@ const Room = require('../models/room.js');
 
 function getListofHomes(req, res) {
 
+    if (Object.keys(req.body).length === 0){
+        return res.sendStatus(405);
+    }
+
     User.findOne({_id: req.body.id}).populate('homes').exec(function (err, user) {
 
         if (err) {
