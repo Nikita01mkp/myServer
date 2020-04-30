@@ -4,10 +4,10 @@ const Auth = require('../models/auth.js');
 
 
 
-const createToken = function (id) {
+const createToken = function (id, role) {
 
     const secret = 'SuperSecretKeyForMyFirstServer123';
-    const token = jwt.sign({userId: id, exp: Math.floor(Date.now() / 1000) + (60 * 30)}, secret);
+    const token = jwt.sign({userId: id, userRole: role ,exp: Math.floor(Date.now() / 1000) + (60 * 2)}, secret);
 
     const secretRef = 'SecretKeyForRefreshToken123987654';
     const refreshToken = jwt.sign({userId: id}, secretRef);
@@ -36,7 +36,7 @@ function checkToken(req, res, next) {
 
 
 
-    if(Object.keys(req.query.token).length === 4){
+    if(req.query.token === undefined){
         return res.status(403).send('Token is empty');
     }
 
@@ -96,7 +96,6 @@ function refreshToken(req, res) {
 
 function deleteToken(req, res, next){
 
-
     Auth.findOne({token: req.body.token}, function (err, auth) {
       if(err){
           next();
@@ -115,11 +114,14 @@ function deleteToken(req, res, next){
 
 function userLogout(req, res){
 
+    if ((req.body === {}) && (Object.keys(req.body).length === 0)) {
+        return res.sendStatus(403);
+    }
 
     Auth.findOne({token: req.body.token}, function (err, auth) {
 
         if(err){
-            return res.status(400)
+            return res.status(403)
         }
         if (auth.refreshToken === req.body.refreshToken){
             auth.remove();

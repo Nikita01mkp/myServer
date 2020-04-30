@@ -61,7 +61,7 @@ function deleteUser(req, res){
 
         Auth.findOneAndDelete({user_id: id}, function (err) {
             if (err){
-                return res.status(404).send(err);
+                return res.status(404).send("Error of delete tokens");
             }
         })
 

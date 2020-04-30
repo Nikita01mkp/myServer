@@ -39,7 +39,7 @@ const addUser = function (req, res) {
 
         newUser.save(function (err) {
             if (err) {
-                return console.log(err);
+                return res.status(400).send("Fail to create user, try again");
             }
             res.status(200).send("Success");
         });
@@ -52,7 +52,7 @@ const addUser = function (req, res) {
 const getUser = function (req, res) {
 
     if (Object.keys(req.body).length === 0) {
-        return res.status(403).send("Object is empty")
+        return res.status(403).send("bad request")
     }
     const id = req.body.id;
     let copyUser = {};
@@ -60,7 +60,7 @@ const getUser = function (req, res) {
     User.findOne({_id: id}, function (err, user) {
 
         if (err) {
-            return res.status(403).send("bad req");
+            return res.status(400).send("Error, try again");
         }
 
         copyUser.name = user.name;
@@ -88,7 +88,7 @@ const loginUser = function (req, res) {
         }
 
         if (bcrypt.hashSync(getPassword, user.userId) === user.password) {
-            const tokens = userAuth.createToken(user._id);
+            const tokens = userAuth.createToken(user._id, user.userRole);
             tokens.userRole = user.userRole;
             res.status(200).send(tokens)
         } else {
@@ -127,7 +127,7 @@ const changeUserPassword = function (req, res) {
     User.findOne({_id: id}, function (err, user) {
 
         if (err) {
-            return res.status(404).send(err);
+            return res.status(405).send(err);
         }
 
         if (bcrypt.hashSync(newUser.oldPassword, user.userId) === user.password) {
@@ -136,7 +136,7 @@ const changeUserPassword = function (req, res) {
             user.save(function (err) {
 
                 if (err) {
-                    return res.status(404).send(err);
+                    return res.status(405).send(err);
                 }
 
             });
@@ -146,12 +146,17 @@ const changeUserPassword = function (req, res) {
     });
 };
 const deleteUser = function (req, res) {
+
+    if ((req.body === {}) && (Object.keys(req.body).length === 0)) {
+        return res.sendStatus(405);
+    }
+
     const id = req.body.id;
 
     User.findOne({_id: id}).populate("users").exec(function (err, user) {
 
         if (err) {
-            return res.status(404).send(err);
+            return res.status(405).send(err);
         }
 
         for (let i = 0; i < user.homes.length; i++) {
@@ -180,7 +185,7 @@ const deleteUser = function (req, res) {
 
         Auth.findOneAndDelete({user_id: id}, function (err) {
             if (err) {
-                return res.status(404).send(err);
+                return res.status(405).send(err);
             }
         })
 
