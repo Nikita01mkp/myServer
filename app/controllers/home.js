@@ -23,10 +23,14 @@ function getListofHomes(req, res) {
 
 function getListofRooms(req, res) {
 
+    if (Object.keys(req.body).length === 0){
+        return res.sendStatus(405);
+    }
+
     Home.findOne({_id: req.body.homeId}).populate('rooms').exec(function (err, home) {
 
         if (err) {
-            return res.status(405);
+            return res.sendStatus(405);
         }
 
         return res.status(200).send(home.rooms);
@@ -36,6 +40,10 @@ function getListofRooms(req, res) {
 }
 
 function addHome(req, res) {
+
+    if (Object.keys(req.body).length === 0){
+        return res.sendStatus(405);
+    }
 
     if (req.body.homeName === undefined){
         console.log("Name is empty");
@@ -58,7 +66,7 @@ function addHome(req, res) {
             }
 
             user.homes.push(home._id);
-            user.save(function (err, user1) {
+            user.save(function (err) {
                 if (err) {
                     return res.status(406)
                 }
@@ -72,6 +80,15 @@ function addHome(req, res) {
 }
 
 function addRoom(req, res) {
+
+    if (Object.keys(req.body).length === 0){
+        return res.sendStatus(405);
+    }
+
+    if (req.body.roomName === undefined){
+        console.log("Name is empty");
+        return res.status(400).send("Room name is empty");
+    }
 
     Home.findOne({_id: req.body.homeId}, function (err, home) {
 
@@ -106,6 +123,15 @@ function addRoom(req, res) {
 
 function updateHome(req, res) {
 
+    if (Object.keys(req.body).length === 0){
+        return res.sendStatus(405);
+    }
+
+    if (req.body.homeName === undefined){
+        console.log("Name is empty");
+        return res.status(400).send("Home name is empty");
+    }
+
 
     Home.findOne({_id: req.body.homeId}, function (err, home) {
 
@@ -130,6 +156,15 @@ function updateHome(req, res) {
 
 function updateRoom(req, res) {
 
+    if (Object.keys(req.body).length === 0){
+        return res.sendStatus(405);
+    }
+
+    if (req.body.roomName === undefined){
+        console.log("Name is empty");
+        return res.status(400).send("Room name is empty");
+    }
+
     Room.findOne({_id: req.body.roomId}, function (err, room) {
 
         if (err) {
@@ -152,6 +187,11 @@ function updateRoom(req, res) {
 }
 
 function deleteHome(req, res) {
+
+    if (Object.keys(req.body).length === 0){
+        return res.sendStatus(405);
+    }
+
 
     Home.findOne({_id: req.body.homeId}).populate("homes").exec(function (err, home) {
 
@@ -180,6 +220,10 @@ function deleteHome(req, res) {
 }
 
 function deleteRoom(req, res) {
+
+    if (Object.keys(req.body).length === 0){
+        return res.sendStatus(405);
+    }
 
     Room.findOne({_id: req.body.roomId}, function (err, room) {
 
