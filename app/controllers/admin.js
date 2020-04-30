@@ -7,7 +7,9 @@ function getUserList(req,res) {
 
     User.find({}, function(err, users){
 
-        if(err) return console.log(err);
+        if(err){
+            return res.status(404).send('Error of get users');
+        }
 
         const masObj = [];
 

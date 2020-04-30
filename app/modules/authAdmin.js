@@ -3,9 +3,6 @@ const User = require('../models/user.js');
 
 function checkAccess(req, res, next) {
 
-    console.log('');
-    console.log(req.query);
-    console.log('');
 
     if((Object.keys(req.query.token).length === 4) || (req.query.token === undefined)){
         return res.status(405).send('Token is empty');
@@ -25,7 +22,7 @@ function checkAccess(req, res, next) {
         }
 
         if(user === {}){
-            return res.status(404).send("unauthorized");
+            return res.status(405).send("user is not exist");
         }
 
         if (user.userRole === "Admin") {

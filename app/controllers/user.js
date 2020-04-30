@@ -9,7 +9,7 @@ const addUser = function (req, res) {
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.send("no body");
     }
-    if (req.body.mail === undefined){
+    if (req.body.mail === undefined) {
         return res.status(406).send("Format email is wrong")
     }
 
@@ -21,7 +21,7 @@ const addUser = function (req, res) {
     const userAge = req.body.age;
 
 
-    const user = new User({
+    const newUser = new User({
         login: userLogin,
         password: userPassword,
         email: userEmail,
@@ -31,17 +31,27 @@ const addUser = function (req, res) {
         userRole: 'User',
     });
 
-    user.save(function (err) {
-        if (err) {
-            return console.log(err);
+    User.findOne({login : newUser.login}, function (err, user) {
+
+        if(user !== null){
+            return res.status(412).send('This login already exist');
         }
-        res.status(200).send("Success");
-    });
+
+        newUser.save(function (err) {
+            if (err) {
+                return console.log(err);
+            }
+            res.status(200).send("Success");
+        });
+
+    })
+
+
 };
 
 const getUser = function (req, res) {
 
-    if(Object.keys(req.body).length === 0){
+    if (Object.keys(req.body).length === 0) {
         return res.status(403).send("Object is empty")
     }
     const id = req.body.id;
@@ -62,7 +72,7 @@ const getUser = function (req, res) {
 };
 
 const loginUser = function (req, res) {
-    if ((!req.body) && (Object.keys(req.body).length === 0)){
+    if ((!req.body) && (Object.keys(req.body).length === 0)) {
         return res.sendStatus(404);
     }
 
@@ -70,25 +80,25 @@ const loginUser = function (req, res) {
     const getPassword = req.body.userPassword;
     User.findOne({login: getLogin}, function (err, user) {
 
-        if (err){
+        if (err) {
             return console.log(err);
         }
         if (user === null) {
-            res.status(400).send('User is not exist');
-        } else {
-
-            if (bcrypt.hashSync(getPassword, user.userId) === user.password) {
-                const tokens = userAuth.createToken(user._id);
-                tokens.userRole = user.userRole;
-                res.status(200).send(tokens)
-            } else {
-                res.status(401).send('Wrong password')
-            }
+            return res.status(400).send('User is not exist');
         }
+
+        if (bcrypt.hashSync(getPassword, user.userId) === user.password) {
+            const tokens = userAuth.createToken(user._id);
+            tokens.userRole = user.userRole;
+            res.status(200).send(tokens)
+        } else {
+            res.status(401).send('Wrong password')
+        }
+
     });
 };
 const changeUser = function (req, res) {
-    if(Object.keys(req.body).length === 0){
+    if (Object.keys(req.body).length === 0) {
         return res.status(403).send("Object is empty")
     }
 
@@ -97,7 +107,7 @@ const changeUser = function (req, res) {
     const newUser = req.body;
 
     User.findOneAndUpdate({_id: id}, newUser, {new: true}, function (err, user) {
-        if (err){
+        if (err) {
             return res.status(404).send(err);
         }
         return res.send(user);
@@ -125,7 +135,7 @@ const changeUserPassword = function (req, res) {
             user.password = bcrypt.hashSync(newUser.password, user.userId);
             user.save(function (err) {
 
-                if (err){
+                if (err) {
                     return res.status(404).send(err);
                 }
 
@@ -140,11 +150,11 @@ const deleteUser = function (req, res) {
 
     User.findOne({_id: id}).populate("users").exec(function (err, user) {
 
-        if (err){
+        if (err) {
             return res.status(404).send(err);
         }
 
-        for(let i = 0; i < user.homes.length; i++){
+        for (let i = 0; i < user.homes.length; i++) {
             Home.findOne({_id: user.homes[i]._id}).populate("homes").exec(function (err, home) {
 
                 if (err) {
@@ -169,7 +179,7 @@ const deleteUser = function (req, res) {
         }
 
         Auth.findOneAndDelete({user_id: id}, function (err) {
-            if (err){
+            if (err) {
                 return res.status(404).send(err);
             }
         })
